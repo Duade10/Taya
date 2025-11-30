@@ -47,7 +47,7 @@ docker-compose up --build
 Services exposed on `localhost:8000` (API) and `localhost:3000` (dashboard).
 
 ## Environment variables
-See `.env.example` for the full list of required values for Slack, SendGrid, JWT, and the database.
+See `.env.example` for the full list of required values for Slack, Mailjet, JWT, and the database.
 
 ## Database schema (core tables)
 - `access_keys`: single-use unlock keys
