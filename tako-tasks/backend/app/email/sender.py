@@ -9,7 +9,7 @@ MAILJET_FROM_NAME = os.getenv("MAILJET_FROM_NAME", "Tako Tasks")
 
 
 def send_access_key_email(email: str, name: str, key: str) -> None:
-    client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET))
+    client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3.1")
     body = {
         "Messages": [
             {
