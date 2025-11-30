@@ -35,6 +35,8 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
+      # Preserve installed dependencies from the image even when bind-mounting the source
+      - /app/node_modules
 
 volumes:
   pgdata:
