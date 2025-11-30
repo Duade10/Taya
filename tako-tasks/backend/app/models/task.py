@@ -41,7 +41,7 @@ class TaskHistory(Base):
     task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False)
     user_id = Column(String, nullable=False)
     action = Column(String, nullable=False)
-    metadata = Column(JSON, default={})
+    details = Column("metadata", JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     task = relationship("Task", back_populates="history")

@@ -73,7 +73,7 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db), workspace: W
         task_id=task.id,
         user_id=payload.creator_user_id,
         action="created",
-        metadata={"title": task.title},
+        details={"title": task.title},
     )
     db.add(history)
     db.commit()
@@ -98,7 +98,7 @@ def update_task(
             task_id=task.id,
             user_id=workspace.bot_user_id,
             action="updated",
-            metadata=payload.dict(exclude_unset=True),
+            details=payload.dict(exclude_unset=True),
         )
     )
     db.commit()
