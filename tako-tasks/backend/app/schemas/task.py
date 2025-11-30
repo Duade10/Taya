@@ -46,7 +46,7 @@ class TaskHistoryOut(BaseModel):
     task_id: int
     user_id: str
     action: str
-    metadata: dict
+    details: dict
     created_at: datetime
 
     class Config:

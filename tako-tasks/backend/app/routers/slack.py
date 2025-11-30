@@ -82,7 +82,7 @@ async def slack_interactions(request: Request, db: Session = Depends(get_db)):
                 task_id=task.id,
                 user_id=task.creator_user_id,
                 action="created",
-                metadata={"source": "slack"},
+                details={"source": "slack"},
             )
         )
         db.commit()
@@ -114,7 +114,7 @@ async def slack_interactions(request: Request, db: Session = Depends(get_db)):
                 task_id=task.id,
                 user_id=payload.get("user", {}).get("id", ""),
                 action=value.get("action", "updated"),
-                metadata=value,
+                details=value,
             )
         )
         db.commit()
