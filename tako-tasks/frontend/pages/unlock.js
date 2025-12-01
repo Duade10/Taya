@@ -23,6 +23,7 @@ export default function Unlock() {
     <DashboardShell
       title="Unlock installation"
       subtitle="Verify your access key to add Tako Tasks to your Slack workspace."
+      showSidebar={false}
       extraActions={
         installUrl && (
           <a

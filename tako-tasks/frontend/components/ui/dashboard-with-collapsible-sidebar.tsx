@@ -2,23 +2,24 @@
 
 import React, { useEffect, useState } from "react"
 import type { Dispatch, ReactNode, SetStateAction } from "react"
+import Link from "next/link"
+import { useRouter } from "next/router"
 import type { LucideIcon } from "lucide-react"
 import {
   Activity,
-  BarChart3,
   Bell,
   ChevronDown,
   ChevronsRight,
   DollarSign,
-  HelpCircle,
   Home,
+  KeyRound,
+  ListChecks,
   Monitor,
   Moon,
   Package,
-  Settings,
   ShoppingCart,
+  Sparkles,
   Sun,
-  Tag,
   TrendingUp,
   User,
   Users,
@@ -29,9 +30,25 @@ export type DashboardShellProps = {
   subtitle?: string
   children: ReactNode
   extraActions?: ReactNode
+  showSidebar?: boolean
 }
 
-export const DashboardShell = ({ title, subtitle, children, extraActions }: DashboardShellProps) => {
+type SidebarNavItem = {
+  Icon: LucideIcon
+  title: string
+  href: string
+  notifs?: number
+}
+
+const navItems: SidebarNavItem[] = [
+  { title: "Dashboard", href: "/dashboard", Icon: Home },
+  { title: "Tasks", href: "/dashboard#tasks", Icon: ListChecks },
+  { title: "Request Access", href: "/get-access", Icon: Sparkles },
+  { title: "Unlock", href: "/unlock", Icon: KeyRound },
+  { title: "Demo", href: "/demo", Icon: Monitor },
+]
+
+export const DashboardShell = ({ title, subtitle, children, extraActions, showSidebar = true }: DashboardShellProps) => {
   const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
@@ -43,10 +60,14 @@ export const DashboardShell = ({ title, subtitle, children, extraActions }: Dash
   }, [isDark])
 
   return (
-    <div className={`flex min-h-screen w-full ${isDark ? "dark" : ""}`}>
+    <div className={`min-h-screen w-full ${isDark ? "dark" : ""}`}>
       <div className="flex w-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-        <Sidebar />
-        <div className="flex-1 bg-gray-50 dark:bg-gray-950 p-6 overflow-auto">
+        {showSidebar && <Sidebar navItems={navItems} />}
+        <div
+          className={`flex-1 bg-gray-50 dark:bg-gray-950 p-6 overflow-auto ${
+            showSidebar ? "" : "max-w-6xl mx-auto"
+          }`}
+        >
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
@@ -93,15 +114,19 @@ const IconButton = ({ children, onClick }: IconButtonProps) => (
 type SidebarOptionProps = {
   Icon: LucideIcon
   title: string
-  selected: string
-  setSelected: Dispatch<SetStateAction<string>>
+  href: string
+  activePath: string
   open: boolean
   notifs?: number
 }
 
-const Sidebar = () => {
+type SidebarProps = {
+  navItems: SidebarNavItem[]
+}
+
+const Sidebar = ({ navItems }: SidebarProps) => {
   const [open, setOpen] = useState(true)
-  const [selected, setSelected] = useState("Dashboard")
+  const router = useRouter()
 
   return (
     <nav
@@ -112,41 +137,31 @@ const Sidebar = () => {
       <TitleSection open={open} />
 
       <div className="space-y-1 mb-8">
-        <Option Icon={Home} title="Dashboard" selected={selected} setSelected={setSelected} open={open} />
-        <Option
-          Icon={DollarSign}
-          title="Sales"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-          notifs={3}
-        />
-        <Option Icon={Monitor} title="View Site" selected={selected} setSelected={setSelected} open={open} />
-        <Option Icon={ShoppingCart} title="Products" selected={selected} setSelected={setSelected} open={open} />
-        <Option Icon={Tag} title="Tags" selected={selected} setSelected={setSelected} open={open} />
-        <Option Icon={BarChart3} title="Analytics" selected={selected} setSelected={setSelected} open={open} />
-        <Option Icon={Users} title="Members" selected={selected} setSelected={setSelected} open={open} notifs={12} />
+        {navItems.map((item) => (
+          <Option
+            key={item.href}
+            Icon={item.Icon}
+            title={item.title}
+            href={item.href}
+            activePath={router.pathname}
+            open={open}
+            notifs={item.notifs}
+          />
+        ))}
       </div>
-
-      {open && (
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-4 space-y-1">
-          <div className="px-3 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Account</div>
-          <Option Icon={Settings} title="Settings" selected={selected} setSelected={setSelected} open={open} />
-          <Option Icon={HelpCircle} title="Help & Support" selected={selected} setSelected={setSelected} open={open} />
-        </div>
-      )}
 
       <ToggleClose open={open} setOpen={setOpen} />
     </nav>
   )
 }
 
-const Option = ({ Icon, title, selected, setSelected, open, notifs }: SidebarOptionProps) => {
-  const isSelected = selected === title
+const Option = ({ Icon, title, href, activePath, open, notifs }: SidebarOptionProps) => {
+  const basePath = href.split("#")[0]
+  const isSelected = activePath === basePath || activePath.startsWith(`${basePath}/`)
 
   return (
-    <button
-      onClick={() => setSelected(title)}
+    <Link
+      href={href}
       className={`relative flex h-11 w-full items-center rounded-md transition-all duration-200 ${
         isSelected
           ? "bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 shadow-sm border-l-2 border-blue-500"
@@ -168,7 +183,7 @@ const Option = ({ Icon, title, selected, setSelected, open, notifs }: SidebarOpt
           {notifs}
         </span>
       )}
-    </button>
+    </Link>
   )
 }
 
