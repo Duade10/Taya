@@ -47,7 +47,7 @@ docker-compose up --build
 Services exposed on `localhost:8000` (API) and `localhost:3000` (dashboard).
 
 ## Environment variables
-See `.env.example` for the full list of required values for Slack, Mailjet, JWT, and the database.
+See `.env.example` for the full list of required values for Slack, Mailjet, JWT, and the database. For deployments, set `MAILJET_API_KEY`, `MAILJET_API_SECRET`, and `MAILJET_FROM_EMAIL` to real Mailjet credentials (the from email must be a verified sender) to avoid 400 responses from Mailjet. The backend now validates these values at runtime; if they are missing or left as placeholders, it will raise a clear error before attempting to call Mailjet.
 
 ## Database schema (core tables)
 - `access_keys`: single-use unlock keys
