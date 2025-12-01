@@ -18,27 +18,62 @@ export default function GetAccess() {
   }
 
   return (
-    <div className="max-w-xl mx-auto py-16">
-      <h1 className="text-3xl font-semibold mb-4">Request Tako Tasks Access</h1>
-      <p className="mb-6 text-slate-600">Share a few details and we will email you a single-use unlock key.</p>
-      <form onSubmit={submit} className="space-y-4 bg-white p-6 rounded shadow">
-        {['name', 'email', 'company', 'team_size'].map((field) => (
-          <div key={field}>
-            <label className="block text-sm font-medium mb-1 capitalize">{field.replace('_', ' ')}</label>
+    <div className="flex items-center justify-center min-h-screen bg-[#F7F8FC] px-4">
+      <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-lg">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Request Access</h2>
+
+        <form className="space-y-5" onSubmit={submit}>
+          <div>
+            <label className="text-sm text-gray-700">Name</label>
             <input
+              name="name"
               required
-              name={field}
-              value={form[field]}
+              value={form.name}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200"
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-        ))}
-        <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded w-full">
-          Send access key
-        </button>
-        {status && <p className="text-sm text-slate-700">{status}</p>}
-      </form>
+
+          <div>
+            <label className="text-sm text-gray-700">Email</label>
+            <input
+              name="email"
+              type="email"
+              required
+              value={form.email}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-700">Company</label>
+            <input
+              name="company"
+              required
+              value={form.company}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-700">Team size</label>
+            <input
+              name="team_size"
+              value={form.team_size}
+              onChange={handleChange}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <button className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700" type="submit">
+            Request Access
+          </button>
+
+          {status && <p className="text-sm text-gray-600">{status}</p>}
+        </form>
+      </div>
     </div>
   )
 }
