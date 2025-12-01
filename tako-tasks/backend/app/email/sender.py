@@ -29,6 +29,10 @@ def send_access_key_email(email: str, name: str, key: str) -> None:
     try:
         response = client.send.create(data=body)
         if response.status_code >= 400:  # pragma: no cover - log in production
-            print(f"Failed to send email: {response.status_code} {response.json()}")
+            try:
+                details = response.json()
+            except ValueError:
+                details = response.text
+            print(f"Failed to send email: {response.status_code} {details}")
     except Exception as exc:  # pragma: no cover - log in production
         print(f"Failed to send email: {exc}")
