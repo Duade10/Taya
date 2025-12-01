@@ -18,32 +18,34 @@ export default function Unlock() {
   }
 
   return (
-    <div className="max-w-xl mx-auto py-16">
-      <h1 className="text-3xl font-semibold mb-4">Unlock the Slack App</h1>
-      <p className="mb-6 text-slate-600">Paste the key from your email to continue to the Slack installation.</p>
-      <form onSubmit={submit} className="space-y-4 bg-white p-6 rounded shadow">
-        <div>
-          <label className="block text-sm font-medium mb-1">Access key</label>
-          <input
-            value={key}
-            onChange={(e) => setKey(e.target.value)}
-            className="w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200"
-            required
-          />
-        </div>
-        <button type="submit" className="bg-emerald-600 text-white px-4 py-2 rounded w-full">
-          Verify key
-        </button>
-        {status && <p className="text-sm text-slate-700">{status}</p>}
-        {installUrl && (
-          <a
-            className="inline-block bg-indigo-700 text-white px-4 py-2 rounded"
-            href={installUrl}
-          >
-            Install Tako Tasks to Slack
-          </a>
-        )}
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-[#F7F8FC] px-4">
+      <div className="bg-white p-10 rounded-2xl shadow-lg w-full max-w-lg">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Unlock Installation</h2>
+
+        <form className="space-y-5" onSubmit={submit}>
+          <div>
+            <label className="text-sm text-gray-700">Access Key</label>
+            <input
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+              placeholder="KEY-XXXXXX-TK"
+              required
+            />
+          </div>
+
+          <button className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700" type="submit">
+            Unlock
+          </button>
+
+          {status && <p className="text-sm text-gray-600">{status}</p>}
+          {installUrl && (
+            <a className="inline-block bg-indigo-700 text-white px-4 py-2 rounded mt-2" href={installUrl}>
+              Install Tako Tasks to Slack
+            </a>
+          )}
+        </form>
+      </div>
     </div>
   )
 }
