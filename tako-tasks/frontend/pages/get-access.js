@@ -23,6 +23,7 @@ export default function GetAccess() {
     <DashboardShell
       title="Request early access"
       subtitle="Tell us about your team to reserve your spot for Tako Tasks."
+      showSidebar={false}
       extraActions={
         <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-sm">
           <Sparkles className="h-4 w-4" />

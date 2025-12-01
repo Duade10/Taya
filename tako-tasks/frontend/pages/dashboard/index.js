@@ -122,7 +122,7 @@ export default function Dashboard() {
         </section>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4" id="tasks">
         {!token && (
           <div className="flex items-center gap-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-100 px-4 py-3 rounded-lg">
             <WifiOff className="h-4 w-4" />
