@@ -31,8 +31,14 @@ export default function Dashboard() {
   useEffect(() => {
     if (!token) return
     const load = async () => {
-      const { data } = await fetchTasks(token, Object.fromEntries(Object.entries(filters).filter(([, v]) => v)))
-      setTasks(data)
+      try {
+        const { data } = await fetchTasks(token, Object.fromEntries(Object.entries(filters).filter(([, v]) => v)))
+        setTasks(Array.isArray(data) ? data : [])
+        setError('')
+      } catch (err) {
+        setTasks([])
+        setError(err.response?.data?.detail || 'Failed to load tasks')
+      }
     }
     load()
   }, [token, filters])
