@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Filter, RefreshCw, WifiOff } from 'lucide-react'
 import TaskCard from '../../components/TaskCard'
 import { DashboardShell } from '@/components/ui/dashboard-with-collapsible-sidebar'
@@ -17,13 +17,33 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState([])
   const [error, setError] = useState('')
 
+  useEffect(() => {
+    const savedToken = localStorage.getItem('tako:token')
+    const savedWorkspace = localStorage.getItem('tako:workspaceId')
+    if (savedToken) {
+      setToken(savedToken)
+    }
+    if (savedWorkspace) {
+      setWorkspaceId(savedWorkspace)
+    }
+  }, [])
+
+  const safeTasks = useMemo(() => (Array.isArray(tasks) ? tasks : []), [tasks])
+
   const handleLogin = async (e) => {
     e.preventDefault()
+    if (!workspaceId.trim()) {
+      setError('Workspace ID is required')
+      return
+    }
     try {
-      const { data } = await loginWithWorkspace(workspaceId)
-      setToken(data.access_token)
+      const { data } = await loginWithWorkspace(workspaceId.trim())
+      setToken(data.access_token || '')
+      localStorage.setItem('tako:token', data.access_token || '')
+      localStorage.setItem('tako:workspaceId', workspaceId.trim())
       setError('')
     } catch (err) {
+      setToken('')
       setError(err.response?.data?.detail || 'Login failed')
     }
   }
@@ -33,11 +53,16 @@ export default function Dashboard() {
     const load = async () => {
       try {
         const { data } = await fetchTasks(token, Object.fromEntries(Object.entries(filters).filter(([, v]) => v)))
-        setTasks(Array.isArray(data) ? data : [])
+        setTasks(Array.isArray(data) ? data : data?.items ?? [])
         setError('')
       } catch (err) {
         setTasks([])
-        setError(err.response?.data?.detail || 'Failed to load tasks')
+        const detail = err.response?.data?.detail || 'Failed to load tasks'
+        setError(detail)
+        if (err.response?.status === 401) {
+          setToken('')
+          localStorage.removeItem('tako:token')
+        }
       }
     }
     load()
@@ -137,18 +162,19 @@ export default function Dashboard() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {token && tasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              title={task.title}
-              description={task.description || 'No description provided'}
-              priority={task.priority || 'Low'}
-              assignee={task.assignee_user_id || 'Unassigned'}
-              due={formatDate(task.due_date)}
-            />
-          ))}
+          {token &&
+            safeTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                title={task.title}
+                description={task.description || 'No description provided'}
+                priority={task.priority || 'Low'}
+                assignee={task.assignee_user_id || 'Unassigned'}
+                due={formatDate(task.due_date)}
+              />
+            ))}
 
-          {token && tasks.length === 0 && (
+          {token && safeTasks.length === 0 && (
             <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 md:col-span-2 lg:col-span-3">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No tasks match your filters</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Try adjusting the filters or creating a new task to get started.</p>
