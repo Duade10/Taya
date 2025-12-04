@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Filter, RefreshCw, WifiOff } from 'lucide-react'
 import TaskCard from '../../components/TaskCard'
 import { DashboardShell } from '@/components/ui/dashboard-with-collapsible-sidebar'
@@ -30,6 +30,23 @@ export default function Dashboard() {
 
   const safeTasks = useMemo(() => (Array.isArray(tasks) ? tasks : []), [tasks])
 
+  const loadTasks = useCallback(async () => {
+    if (!token) return
+    try {
+      const { data } = await fetchTasks(token, Object.fromEntries(Object.entries(filters).filter(([, v]) => v)))
+      setTasks(Array.isArray(data) ? data : data?.items ?? [])
+      setError('')
+    } catch (err) {
+      setTasks([])
+      const detail = err.response?.data?.detail || 'Failed to load tasks'
+      setError(detail)
+      if (err.response?.status === 401) {
+        setToken('')
+        localStorage.removeItem('tako:token')
+      }
+    }
+  }, [filters, token])
+
   const handleLogin = async (e) => {
     e.preventDefault()
     if (!workspaceId.trim()) {
@@ -50,23 +67,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!token) return
-    const load = async () => {
-      try {
-        const { data } = await fetchTasks(token, Object.fromEntries(Object.entries(filters).filter(([, v]) => v)))
-        setTasks(Array.isArray(data) ? data : data?.items ?? [])
-        setError('')
-      } catch (err) {
-        setTasks([])
-        const detail = err.response?.data?.detail || 'Failed to load tasks'
-        setError(detail)
-        if (err.response?.status === 401) {
-          setToken('')
-          localStorage.removeItem('tako:token')
-        }
-      }
-    }
-    load()
-  }, [token, filters])
+    loadTasks()
+  }, [loadTasks, token])
 
   const updateFilter = (e) => setFilters({ ...filters, [e.target.name]: e.target.value })
 
@@ -75,9 +77,19 @@ export default function Dashboard() {
       title="Task dashboard"
       subtitle="Connect your workspace and filter synced tasks from the Slack bot."
       extraActions={
-        <button className="hidden sm:inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm">
-          + New Task
-        </button>
+        <div className="hidden sm:flex items-center gap-3">
+          <button
+            type="button"
+            onClick={loadTasks}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh tasks
+          </button>
+          <button className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm">
+            + New Task
+          </button>
+        </div>
       }
     >
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
